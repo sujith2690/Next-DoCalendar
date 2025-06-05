@@ -1,8 +1,8 @@
 import { auth } from "@/auth";
 
-export const metadata = {
-    title: "My calender DoCalendar",
-};
+// export const metadata = {
+//     title: "My calender DoCalendar",
+// };
 
 export default async function MyCalender() {
     const session = await auth()

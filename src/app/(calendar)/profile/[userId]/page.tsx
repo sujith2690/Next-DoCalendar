@@ -1,6 +1,6 @@
-export const metadata = {
-    title: "Profile DcCalendar",
-};
+// export const metadata = {
+//     // title: "Profile DcCalendar",
+// };
 
 import { notFound } from "next/navigation";
 const UserProfile = async ({ params }: { params: { userId: string } }) => {
