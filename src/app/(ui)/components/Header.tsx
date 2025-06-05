@@ -15,13 +15,16 @@ export default function Header() {
 
                 {/* Navigation Links */}
                 <nav className="space-x-6 hidden md:block">
-                    <Link href="/calendar" className="text-gray-700 hover:text-blue-600 font-medium">
+                    <Link href="/" className="text-gray-700 hover:text-blue-600 font-medium">
+                        Home
+                    </Link>
+                    <Link href="/myCalendar" className="text-gray-700 hover:text-blue-600 font-medium">
                         Calendar
                     </Link>
-                    <Link href="/events" className="text-gray-700 hover:text-blue-600 font-medium">
+                    {/* <Link href="/events" className="text-gray-700 hover:text-blue-600 font-medium">
                         Events
-                    </Link>
-                    <Link href="/profile" className="text-gray-700 hover:text-blue-600 font-medium">
+                    </Link> */}
+                    <Link href="/profile/1" className="text-gray-700 hover:text-blue-600 font-medium">
                         Profile
                     </Link>
                 </nav>

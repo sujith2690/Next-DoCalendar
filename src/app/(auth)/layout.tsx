@@ -20,10 +20,9 @@ export default function AuthLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className={poppins.className} suppressHydrationWarning>
-      <body className="antialiased h-screen">
-        {children}
-      </body>
-    </html>
+    <main>
+      {children}
+    </main>
+
   );
 }

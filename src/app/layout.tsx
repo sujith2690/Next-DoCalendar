@@ -1,10 +1,7 @@
 import { Poppins } from "next/font/google";
-import "../globals.css";
+import "./globals.css";
 
 // components
-import Header from "../(ui)/components/Header";
-import Footer from "../(ui)/components/Footer";
-
 
 const poppins = Poppins({
   subsets: ["latin"],
@@ -17,17 +14,16 @@ export const metadata = {
   description: "A modern calendar application for managing your events and schedules.",
 };
 
-export default function CalenderLayout({
+export default function AuthLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
   return (
-    <main>
-      <Header />
-      {children}
-      <Footer />
-    </main>
-
+    <html lang="en" className={poppins.className} suppressHydrationWarning>
+      <body className="antialiased h-screen">
+        {children}
+      </body>
+    </html>
   );
 }
