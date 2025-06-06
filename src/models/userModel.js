@@ -21,11 +21,16 @@ const userSchema = new mongoose.Schema({
         type: String,
         // required: [true, "Please provide a password"]
     },
-
-    // isVerified: {
-    //     type: Boolean,
-    //     default: false,
-    // },
+    phone: {
+        value: {
+            type: String,
+            unique: true
+        },
+        isVerified: {
+            type: Boolean,
+            default: false
+        }
+    },
 })
 
 const userModel = mongoose.models.users || mongoose.model("users", userSchema)

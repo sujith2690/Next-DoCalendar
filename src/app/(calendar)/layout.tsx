@@ -4,6 +4,7 @@ import "../globals.css";
 // components
 import Header from "../(ui)/components/Header";
 import Footer from "../(ui)/components/Footer";
+import { SessionProvider } from "next-auth/react";
 
 
 const poppins = Poppins({
@@ -24,9 +25,11 @@ export default function CalenderLayout({
 }>) {
   return (
     <main>
-      <Header />
-      {children}
-      <Footer />
+      <SessionProvider>
+        <Header />
+        {children}
+        <Footer />
+      </SessionProvider>
     </main>
 
   );

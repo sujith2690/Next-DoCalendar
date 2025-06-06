@@ -1,5 +1,11 @@
 import { Poppins } from "next/font/google";
 import "../globals.css";
+import { SessionProvider } from "next-auth/react";
+import AuthPageLayout from "../(ui)/components/LoginBg";
+
+// toastify
+import { ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 // components
 
@@ -21,7 +27,12 @@ export default function AuthLayout({
 }>) {
   return (
     <main>
-      {children}
+      <SessionProvider>
+        <AuthPageLayout>
+          {children}
+          <ToastContainer />
+        </AuthPageLayout>
+      </SessionProvider>
     </main>
 
   );
