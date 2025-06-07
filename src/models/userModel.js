@@ -1,12 +1,9 @@
-import mongoose from "mongoose"
-
+import mongoose from "mongoose";
 
 const userSchema = new mongoose.Schema({
-
     userName: {
         type: String,
-        required: [true, "Please provide a User name"],
-        unique: true
+        required: [true, "Please provide a User name"]
     },
     email: {
         type: String,
@@ -18,21 +15,29 @@ const userSchema = new mongoose.Schema({
         required: [true, "Please provide a password"]
     },
     image: {
-        type: String,
-        // required: [true, "Please provide a password"]
+        type: String
     },
     phone: {
         value: {
             type: String,
-            unique: true
+            unique: true,
+            // sparse: true // prevents unique conflict if `value` is not set
         },
         isVerified: {
             type: Boolean,
             default: false
         }
     },
-})
+    googleAccessToken: {
+        type: String
+    },
+    googleRefreshToken: {
+        type: String
+    },
+    googleTokenExpiry: {
+        type: Number // timestamp in seconds
+    }
+});
 
-const userModel = mongoose.models.users || mongoose.model("users", userSchema)
-
-export default userModel
+const userModel = mongoose.models.users || mongoose.model("users", userSchema);
+export default userModel;

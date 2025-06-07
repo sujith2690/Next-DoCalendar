@@ -1,10 +1,12 @@
 import { Poppins } from "next/font/google";
 import "../globals.css";
+import { SessionProvider } from "next-auth/react";
+import { ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 // components
 import Header from "../(ui)/components/Header";
 import Footer from "../(ui)/components/Footer";
-import { SessionProvider } from "next-auth/react";
 
 
 const poppins = Poppins({
@@ -28,6 +30,7 @@ export default function CalenderLayout({
       <SessionProvider>
         <Header />
         {children}
+         <ToastContainer />
         <Footer />
       </SessionProvider>
     </main>

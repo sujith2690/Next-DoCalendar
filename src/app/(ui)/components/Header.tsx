@@ -19,7 +19,10 @@ export default async function Header() {
                         Home
                     </Link>
                     <Link href="/myCalendar" className="text-gray-700 hover:text-blue-600 font-medium">
-                        Calendar
+                        My Calendar
+                    </Link>
+                    <Link href="/addEvent" className="text-gray-700 hover:text-blue-600 font-medium">
+                        Add Event
                     </Link>
                     <Link href="/profile/1" className="text-gray-700 hover:text-blue-600 font-medium">
                         Profile

@@ -23,6 +23,7 @@ export const config = {
         '/signUp',
         '/profile',
         '/myCalendar',
+        '/addEvent',
         '/profile/:path*'
     ],
 }

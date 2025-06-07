@@ -105,7 +105,7 @@ export default function SignIn() {
         </p>
         <button
           type="button"
-          onClick={() => signIn("google", { callbackUrl: "/phone" })}
+          onClick={() => signIn("google")}
           className="flex items-center justify-center gap-3 w-full py-2 px-4 border border-gray-300 bg-white text-gray-800 rounded-lg shadow-md hover:shadow-lg hover:bg-gray-100 transition duration-200 font-medium"
         >
           <img

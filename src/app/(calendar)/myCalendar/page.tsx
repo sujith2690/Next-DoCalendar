@@ -1,15 +1,20 @@
-
-
-// import { auth } from "@/auth";
-
-// export const metadata = {
-//     title: "My calender DoCalendar",
-// };
+"use client";
+import React, { useEffect } from 'react';
+import { auth } from "@/auth";
+import { myEvents } from '@/app/axiosPath/events';
 
 export default async function MyCalender() {
-    // const session = await auth()
-    // console.log(session,'-----------------session')
-    // if (!session) return <div>not authorized</div>
+
+    // useEffect(() => {
+    //     const getMyCalender = async () => {
+    //         const response = await myEvents()
+    //     };
+    //     getMyCalender();
+    // }, [])
+
+
+
+
     return (
         <section className="flex min-h-screen flex-col items-center justify-between p-24">
             <h1 className="text-4xl font-bold">My Calendar</h1>
