@@ -1,7 +1,13 @@
 import EditEvent from "@/app/(ui)/components/EditEvent";
 
-const EditEventPage = async ({ params }: { params: { eventId: string } }) => {
-    return await <EditEvent eventId={params.eventId} />;
+interface EditEventPageProps {
+    params: {
+        eventId: string;
+    };
+}
+
+const EditEventPage = ({ params }: EditEventPageProps) => {
+    return <EditEvent eventId={params.eventId} />;
 };
 
 export default EditEventPage;
