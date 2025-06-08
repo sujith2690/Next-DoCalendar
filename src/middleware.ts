@@ -9,7 +9,10 @@ export function middleware(request: NextRequest) {
     // console.log(token, '------ token in middleware');
 
     if (publicPath && token) {
-        return NextResponse.redirect(new URL('/', request.url))
+        return NextResponse.redirect(new URL('/myEvents', request.url))
+    }
+    if (!publicPath && token) {
+        return NextResponse.rewrite(request.nextUrl)
     }
     if (!publicPath && !token) {
         return NextResponse.redirect(new URL('/login', request.url))
@@ -22,8 +25,9 @@ export const config = {
         '/login',
         '/signUp',
         '/profile',
-        '/myCalendar',
+        '/myEvents',
         '/addEvent',
+        // '/edit/:path*',
         '/profile/:path*'
     ],
 }

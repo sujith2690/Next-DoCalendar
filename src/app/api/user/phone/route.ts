@@ -32,7 +32,8 @@ export async function GET(req: NextRequest) {
             phoneNumber: user.phone,
             phoneNumberExists: true,
         }, { status: 200 });
-    } catch (error) {
+    } catch (error: any) {
+        console.log('error in phone route GET method-------------- ',error.message);
         return NextResponse.json({ error: "Server error" }, { status: 500 });
     }
 }

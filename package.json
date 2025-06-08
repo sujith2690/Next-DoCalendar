@@ -11,14 +11,17 @@
   "dependencies": {
     "@googleapis/calendar": "^10.0.1",
     "axios": "^1.9.0",
+    "formik": "^2.4.6",
     "googleapis": "^150.0.1",
     "mongoose": "^8.15.1",
     "next": "15.3.3",
     "next-auth": "^5.0.0-beta.28",
     "react": "^18.0.0",
     "react-dom": "^18.0.0",
+    "react-icons": "^5.5.0",
     "react-toastify": "^11.0.5",
-    "twilio": "^5.7.0"
+    "twilio": "^5.7.0",
+    "yup": "^1.6.1"
   },
   "devDependencies": {
     "@tailwindcss/postcss": "^4",

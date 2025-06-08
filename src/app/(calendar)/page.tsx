@@ -22,8 +22,8 @@ export default function UserProfile() {
         } else {
           setNumberExists(true);
         }
-      } catch (error) {
-        console.error("Error fetching user data:", error);
+      } catch (error:any) {
+        console.error("Error fetching user data:---", error.message);
       } finally {
         setLoading(false);
       }

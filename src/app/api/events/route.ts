@@ -6,6 +6,7 @@ import { createEvent, updateEvent, deleteEvent, getCalendarClient, listEvents } 
 import userModel from "@/models/userModel";
 import eventModel from "@/models/eventModel";
 import { time } from "console";
+import { getSession } from "@/utils/session";
 
 export async function GET(req: NextRequest) {
     const session = await auth();
@@ -14,33 +15,19 @@ export async function GET(req: NextRequest) {
     if (!session) {
         return new Response(JSON.stringify({ error: 'Unauthorized' }), { status: 401 });
     }
-
     await connectDB();
-    // const googleEvents = await listEvents(session.googleAccessToken);
     const now = new Date();
     const weekLater = new Date();
     weekLater.setDate(now.getDate() + 7);
-
-    const googleEvents = await listEvents(
-        session.googleAccessToken,
-        now.toISOString(),
-        weekLater.toISOString()
-    );
-
-    console.log('----------', googleEvents, '--------googleEvent in addEvent route');
-    // if (googleEvents.length > 0) {
-    //     console.log('First Event:', googleEvents[0]);
-    // } else {
-    //     console.log('No events found.');
-    // }
     if (!session || !session.user || !session.user._id) {
         return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
     await connectDB();
     try {
-        const events = await eventModel.find({ userId: session.user._id })
-        return new Response(JSON.stringify(events), { status: 200 });
+        const userEvents = await eventModel.findOne({ userId: session.user._id })
+        console.log(userEvents.events, '-----------------all  event route db');
+        return new Response(JSON.stringify(userEvents.events), { status: 200 });
     } catch (error: any) {
         console.log("error fetching events:-----------", error.message);
         return new Response(JSON.stringify({ error: error.message }), { status: 500 });
@@ -59,8 +46,17 @@ export async function POST(req: NextRequest) {
     const body = await req.json();
 
     try {
+        console.log(body, '-------------body')
         const userId = session.user._id;
         const userEmail = session.user.email;
+        // const data = {
+        //     summary: 'Eiusmod facilis haru',
+        //     description: 'Nesciunt qui provid',
+        //     start: { dateTime: '2025-06-08T19:45:00+05:30', timeZone: 'Asia/Kolkata' },
+        //     end: { dateTime: '2025-06-09T02:55:00+05:30', timeZone: 'Asia/Kolkata' },
+        //     location: 'Lorem est excepturi',
+        //     attendees: [{ email: 'asd@gmail.com' }, { email: 'qwe@gmail.com' }]
+        // }
 
         // Step 1: Create event in Google Calendar
         const googleEvent = await createEvent(session.googleAccessToken, body);
@@ -111,3 +107,108 @@ export async function POST(req: NextRequest) {
         });
     }
 }
+
+export async function DELETE(req: NextRequest) {
+    const session = await auth();
+    if (!session || !session.googleAccessToken) {
+        return new Response(
+            JSON.stringify({ error: "Unauthorized - no access token" }),
+            { status: 401 }
+        );
+    }
+    await connectDB();
+
+    try {
+        const { searchParams } = new URL(req.url);
+        const googleEventId = searchParams.get("eventId");
+
+        if (!googleEventId) {
+            return new Response(JSON.stringify({ error: "Missing googleEventId" }), { status: 400 });
+        }
+
+        const deleted = await deleteEvent(session.googleAccessToken, googleEventId);
+        const updatedDoc = await eventModel.findOneAndUpdate(
+            { userId: session.user._id },
+            { $pull: { events: { googleEventId: googleEventId } } },
+            { new: true } // return the updated document
+        );
+
+        if (!updatedDoc) {
+            return new Response(JSON.stringify({ error: "User or event not found" }), {
+                status: 404,
+            });
+        }
+        return new Response(JSON.stringify({ success: true }), { status: 200 });
+    } catch (error: any) {
+        console.log(error.message, "--------------error in deletion");
+        return new Response(JSON.stringify({ error: error.message }), { status: 500 });
+    }
+}
+
+
+export async function PUT(req: NextRequest) {
+    const session = await auth();
+    if (!session || !session.user || !session.user._id) {
+        return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+
+    const body = await req.json();
+    const { eventId, attendees, ...updatedData } = body;
+    console.log(updatedData, '------------updatedData')
+
+    if (!eventId) {
+        return NextResponse.json({ error: "Event ID is required" }, { status: 400 });
+    }
+
+    await connectDB();
+
+    try {
+        const updatedGoogleEvent = await updateEvent(session.googleAccessToken, eventId, updatedData);
+        console.log(updatedGoogleEvent, '--------------updatedGoogleEvent')
+        const newEvent = {
+            googleEventId: updatedGoogleEvent.id,
+            summary: updatedGoogleEvent.summary,
+            description: updatedGoogleEvent.description,
+            location: updatedGoogleEvent.location,
+            start: updatedGoogleEvent.start,
+            end: updatedGoogleEvent.end,
+            attendees: attendees.map((a: any) => ({
+                email: a.email,
+                responseStatus: a.responseStatus || "needsAction",
+            })),
+            updatedAt: new Date(),
+        };
+
+        const userId = session.user._id;
+
+        // Update the existing event inside the user's `events` array (if using array of events)
+        const updatedDoc = await eventModel.findOneAndUpdate(
+            { userId, "events.googleEventId": eventId },
+            {
+                $set: {
+                    "events.$": newEvent,
+                    updatedAt: new Date(),
+                },
+            },
+            { new: true }
+        );
+
+        if (!updatedDoc) {
+            await eventModel.findOneAndUpdate(
+                { userId },
+                {
+                    $push: { events: newEvent },
+                    $set: { updatedAt: new Date() },
+                },
+                { new: true }
+            );
+        }
+
+        return NextResponse.json({ message: "Event updated successfully", data: updatedGoogleEvent }, { status: 200 });
+
+    } catch (error: any) {
+        console.error("Update failed:", error);
+        return NextResponse.json({ error: error.message || "Failed to update event" }, { status: 500 });
+    }
+}
+

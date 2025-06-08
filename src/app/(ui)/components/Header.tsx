@@ -18,8 +18,8 @@ export default async function Header() {
                     <Link href="/" className="text-gray-700 hover:text-blue-600 font-medium">
                         Home
                     </Link>
-                    <Link href="/myCalendar" className="text-gray-700 hover:text-blue-600 font-medium">
-                        My Calendar
+                    <Link href="/myEvents" className="text-gray-700 hover:text-blue-600 font-medium">
+                        My Events
                     </Link>
                     <Link href="/addEvent" className="text-gray-700 hover:text-blue-600 font-medium">
                         Add Event

@@ -147,6 +147,8 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
         // 1. Store user in DB and save Google tokens
         async signIn({ user, account }) {
             await connectDB();
+            console.log(account?.access_token, '--------A--------- account access token in signIn callback');
+            console.log(account?.refresh_token, '--------R---f------ account refresh token in signIn callback');
 
             let dbUser = await userModel.findOne({ email: user.email });
             if (!dbUser) {
@@ -216,7 +218,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
                             }
                         );
                     } else {
-                        console.error("Token refresh failed:", data);
+                        console.error("Token refresh failed:--------", data);
                     }
                 } catch (error) {
                     console.error("Error refreshing Google token:", error);
