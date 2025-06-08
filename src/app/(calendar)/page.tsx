@@ -3,6 +3,8 @@
 import axios from "axios";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
+import ProjectDescription from "../(ui)/components/ProjectDescription";
+import Loading from "../(ui)/components/Loading";
 
 export default function UserProfile() {
   const router = useRouter();
@@ -13,16 +15,15 @@ export default function UserProfile() {
     const fetchUserPhone = async () => {
       setLoading(true);
       try {
-        console.log("Fetching user phone...");
         const { data } = await axios.get("/api/user/phone");
-        console.log(data,'----------------- data in phone route GET method');
+        console.log(data, '----------------- data in phone route GET method');
         if (!data.phoneNumberExists) {
           // Client-side navigation to /phone
           router.push("/phone");
         } else {
           setNumberExists(true);
         }
-      } catch (error:any) {
+      } catch (error: any) {
         console.error("Error fetching user data:---", error.message);
       } finally {
         setLoading(false);
@@ -32,13 +33,12 @@ export default function UserProfile() {
     fetchUserPhone();
   }, [router]);
 
-  if (loading) return <p>Loading user data...</p>;
+  if (loading) return <Loading/>
 
   return numberExists ? (
-    <main className="flex flex-col items-center justify-between p-24">
-      <h1 className="text-4xl font-bold">Welcome to DOCalendar</h1>
-      <p className="mt-4 text-lg">User has phone number.</p>
-    </main>
+    <>
+      <ProjectDescription />
+    </>
   ) : (
     <main className="flex flex-col items-center justify-between p-24">
       <h1 className="text-4xl font-bold">Welcome to DOCalendar</h1>

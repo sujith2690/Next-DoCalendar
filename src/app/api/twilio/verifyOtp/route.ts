@@ -76,6 +76,8 @@ export async function POST(req: NextRequest) {
         if (!session || !session.user || !session.user._id) {
             return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
         }
+        await connectDB();
+
         const userData = await userModel.findOne({ email: session.user.email })
         console.log(userData, '-----user Data')
 
@@ -83,7 +85,9 @@ export async function POST(req: NextRequest) {
             console.log('🚫 Missing OTP or Email or Phone');
             return NextResponse.json({ error: "OTP and Email are required" }, { status: 400 });
         }
-        await connectDB();
+        if (userData?.phone?.value && userData?.phone?.isVerified) {
+            return NextResponse.json({ message: "Phone number already verified" }, { status: 200 });
+        }
 
         const isVerified = await verifyUserOtp(otp, phone);
         console.log(isVerified, '----------🔍 OTP Verification Result');
@@ -98,10 +102,7 @@ export async function POST(req: NextRequest) {
         ).select("phone");
 
         return NextResponse.json(
-            {
-                message: "Phone number verified successfully",
-                phone: updatedUser?.phone
-            },
+            { message: "Phone number verified successfully" },
             { status: 200 }
         );
     } catch (error: any) {

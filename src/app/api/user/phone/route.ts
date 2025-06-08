@@ -16,24 +16,28 @@ export async function GET(req: NextRequest) {
         await connectDB();
 
         const user = await userModel.findById(session.user._id).select("phone");
-        console.log(user, '----------------- user in phone route');
+
         if (!user) {
             return NextResponse.json({ error: "User not found" }, { status: 404 });
         }
-        console.log(user.phone, '------------------ user phone in phone route');
-        if (!user.phone || user.phone.trim() === "") {
+
+        const phoneValue = user.phone?.value?.trim();
+
+        if (!phoneValue) {
             return NextResponse.json({
-                message: "No Phone Number.",
+                message: "No phone number registered.",
                 phoneNumberExists: false,
-            }, { status: 200 });    
+            }, { status: 200 });
         }
 
         return NextResponse.json({
-            phoneNumber: user.phone,
+            message: "Phone number found.",
+            phoneNumber: phoneValue,
             phoneNumberExists: true,
         }, { status: 200 });
+
     } catch (error: any) {
-        console.log('error in phone route GET method-------------- ',error.message);
+        console.log('Error in phone route GET method:', error.message);
         return NextResponse.json({ error: "Server error" }, { status: 500 });
     }
 }

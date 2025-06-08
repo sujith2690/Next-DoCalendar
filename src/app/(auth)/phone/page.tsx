@@ -2,11 +2,12 @@
 
 import axios from 'axios';
 import { useSession } from 'next-auth/react';
-import { redirect } from 'next/navigation';
+import { redirect, useRouter } from 'next/navigation';
 import React, { useState } from 'react'
 import { toast } from 'react-toastify';
 
 const PhoneNumberPage = () => {
+    const router = useRouter();
     const [phone, setPhone] = useState("");
     const [otp, setOtp] = useState("")
     const [verify, setVerify] = useState(false)
@@ -43,7 +44,6 @@ const PhoneNumberPage = () => {
                 setVerify(true);
                 // setPhone("");
                 setOtp("")
-                redirect("/")
             }
         } catch (error: any) {
             console.error("Error saving phone:", error.message);
@@ -60,18 +60,18 @@ const PhoneNumberPage = () => {
         }
         try {
             setLoading(true);
-            const { data } = await axios.post("/api/twilio/verifyOtp", { email: user.email, otp, phone });
-            console.log(data, '----------------- res in verifyOtp route POST method');
-            if (data.status === 200) {
-                toast.success("Phone number verified successfully");
-                redirect("/");
-            } else {
-                toast.error("Failed to verify phone number.");
+            const response = await axios.post("/api/twilio/verifyOtp", { email: user.email, otp, phone });
+            if (response.status === 200) {
+                toast.success(response.data.message);
+                router.push("/");
             }
+            //  else {
+            //     toast.error("Failed to verify phone number.");
+            // }
             // setPhone("");
-        } catch (error:any) {
+        } catch (error: any) {
             console.error("Error verifying OTP---:", error);
-        } finally { 
+        } finally {
             setLoading(false);
             setVerify(true);
         }

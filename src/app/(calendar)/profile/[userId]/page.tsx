@@ -2,6 +2,7 @@
 //     // title: "Profile DcCalendar",
 // };
 
+import CallButton from "@/app/(ui)/components/CallButton";
 import { notFound } from "next/navigation";
 const UserProfile = async ({ params }: { params: { userId: string } }) => {
     const { userId } = params;
@@ -9,7 +10,11 @@ const UserProfile = async ({ params }: { params: { userId: string } }) => {
         notFound()
     }
     return (
-        <div>UserProfile -- {userId}</div>
+        <div>UserProfile -- {userId}
+            <div>
+                <CallButton />
+            </div>
+        </div>
     );
 };
 
