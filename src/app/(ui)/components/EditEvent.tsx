@@ -1,4 +1,5 @@
 
+
 "use client"
 
 import { getGoogleEvent, updateEventNow } from '@/app/axiosPath/events';
@@ -7,6 +8,7 @@ import { useSession } from 'next-auth/react';
 import { redirect } from 'next/navigation';
 import React, { useEffect, useState } from 'react'
 import { toast } from 'react-toastify';
+import Loading from './Loading';
 
 type EventFormData = {
     summary: string;
@@ -36,10 +38,9 @@ function getCurrentDateTimeString(): string {
     return `${year}-${month}-${day}T${hours}:${minutes}`;
 }
 
-const EditEvent = ({ eventId }: { eventId: string }) => {   
+const EditEvent = ({ eventId }: { eventId: string }) => {
     const { data: session } = useSession();
     if (!session) { redirect('/login'); }
-
     const [currentDateTime, setCurrentDateTime] = useState(getCurrentDateTimeString());
     const [formData, setFormData] = useState<EventFormData>({
         summary: '',
@@ -50,6 +51,7 @@ const EditEvent = ({ eventId }: { eventId: string }) => {
         attendees: '',
     });
     const [isSubmitting, setIsSubmitting] = useState(false);
+    const [loading, setLoading] = useState(false)
     const [errors, setErrors] = useState<FormErrors>({});
 
     // Update current time every minute
@@ -62,6 +64,7 @@ const EditEvent = ({ eventId }: { eventId: string }) => {
     }, []);
     useEffect(() => {
         const getEventData = async (eventId: string) => {
+            setLoading(true)
             try {
                 const { data } = await getGoogleEvent(eventId);
                 console.log("Fetched event data:--------", data.start.dateTime);
@@ -79,9 +82,11 @@ const EditEvent = ({ eventId }: { eventId: string }) => {
                 };
                 console.log("formattedData:---f-----", formattedData.start);
                 setFormData(formattedData);
+                setLoading(false)
             } catch (error) {
                 console.error("Error fetching event:", error);
                 toast.error('Failed to fetch event details.');
+                setLoading(false)
             }
         };
         getEventData(eventId);
@@ -156,162 +161,170 @@ const EditEvent = ({ eventId }: { eventId: string }) => {
             redirect('/myEvents')
         } catch (error: any) {
             console.error('Error updating event:', error);
-            toast.error(error?.response?.data?.error );
+            toast.error(error?.response?.data?.error);
         } finally {
             setIsSubmitting(false);
         }
     };
 
     return (
-        <div className="min-h-screen bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
-            <div className="max-w-3xl mx-auto">
-                <div className="text-center mb-8">
-                    <h1 className="text-3xl font-extrabold text-gray-900">Update Event</h1>
-                    <p className="mt-2 text-sm text-gray-600">Change form below to schedule your event</p>
-                </div>
+        <>
 
-                <div className="bg-white shadow rounded-lg p-6 sm:p-8">
-                    <form onSubmit={handleSubmit} className="space-y-6">
-                        <div>
-                            <label htmlFor="summary" className="block text-sm font-medium text-gray-700">
-                                Event Title *
-                            </label>
-                            <div className="mt-1">
-                                <input
-                                    type="text"
-                                    id="summary"
-                                    name="summary"
-                                    value={formData.summary}
-                                    onChange={handleChange}
-                                    className={`block w-full px-4 py-3 rounded-md border ${errors.summary ? 'border-red-300' : 'border-gray-300'} shadow-sm focus:ring-blue-500 focus:border-blue-500`}
-                                    placeholder="Team meeting, Conference, etc."
-                                    required
-                                />
-                                {errors.summary && <p className="mt-1 text-sm text-red-600">{errors.summary}</p>}
-                            </div>
-                        </div>
-
-                        <div>
-                            <label htmlFor="description" className="block text-sm font-medium text-gray-700">
-                                Description
-                            </label>
-                            <div className="mt-1">
-                                <textarea
-                                    id="description"
-                                    name="description"
-                                    rows={4}
-                                    value={formData.description}
-                                    onChange={handleChange}
-                                    className="block w-full px-4 py-3 rounded-md border border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500"
-                                    placeholder="What's this event about?"
-                                />
-                            </div>
-                        </div>
-
-                        <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
-                            <div>
-                                <label htmlFor="start" className="block text-sm font-medium text-gray-700">
-                                    Start Date & Time *
-                                </label>
-                                <div className="mt-1">
-                                    <input
-                                        type="datetime-local"
-                                        id="start"
-                                        name="start"
-                                        value={formData.start}
-                                        onChange={handleChange}
-                                        min={currentDateTime}
-                                        className={`block w-full px-4 py-3 rounded-md border ${errors.start ? 'border-red-300' : 'border-gray-300'} shadow-sm focus:ring-blue-500 focus:border-blue-500`}
-                                        required
-                                    />
-                                    {errors.start && <p className="mt-1 text-sm text-red-600">{errors.start}</p>}
-                                </div>
+            {
+                loading ? <><Loading /></> :
+                    <div className="min-h-screen bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
+                        <div className="max-w-3xl mx-auto">
+                            <div className="text-center mb-8">
+                                <h1 className="text-3xl font-extrabold text-gray-900">Update Event</h1>
+                                <p className="mt-2 text-sm text-gray-600">Change form below to schedule your event</p>
                             </div>
 
-                            <div>
-                                <label htmlFor="end" className="block text-sm font-medium text-gray-700">
-                                    End Date & Time *
-                                </label>
-                                <div className="mt-1">
-                                    <input
-                                        type="datetime-local"
-                                        id="end"
-                                        name="end"
-                                        value={formData.end}
-                                        onChange={handleChange}
-                                        min={formData.start || currentDateTime}
-                                        className={`block w-full px-4 py-3 rounded-md border ${errors.end ? 'border-red-300' : 'border-gray-300'} shadow-sm focus:ring-blue-500 focus:border-blue-500`}
-                                        required
-                                    />
-                                    {errors.end && <p className="mt-1 text-sm text-red-600">{errors.end}</p>}
-                                </div>
+                            <div className="bg-white shadow rounded-lg p-6 sm:p-8">
+                                <form onSubmit={handleSubmit} className="space-y-6">
+                                    <div>
+                                        <label htmlFor="summary" className="block text-sm font-medium text-gray-700">
+                                            Event Title *
+                                        </label>
+                                        <div className="mt-1">
+                                            <input
+                                                type="text"
+                                                id="summary"
+                                                name="summary"
+                                                value={formData.summary}
+                                                onChange={handleChange}
+                                                className={`block w-full px-4 py-3 rounded-md border ${errors.summary ? 'border-red-300' : 'border-gray-300'} shadow-sm focus:ring-blue-500 focus:border-blue-500`}
+                                                placeholder="Team meeting, Conference, etc."
+                                                required
+                                            />
+                                            {errors.summary && <p className="mt-1 text-sm text-red-600">{errors.summary}</p>}
+                                        </div>
+                                    </div>
+
+                                    <div>
+                                        <label htmlFor="description" className="block text-sm font-medium text-gray-700">
+                                            Description
+                                        </label>
+                                        <div className="mt-1">
+                                            <textarea
+                                                id="description"
+                                                name="description"
+                                                rows={4}
+                                                value={formData.description}
+                                                onChange={handleChange}
+                                                className="block w-full px-4 py-3 rounded-md border border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500"
+                                                placeholder="What's this event about?"
+                                            />
+                                        </div>
+                                    </div>
+
+                                    <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
+                                        <div>
+                                            <label htmlFor="start" className="block text-sm font-medium text-gray-700">
+                                                Start Date & Time *
+                                            </label>
+                                            <div className="mt-1">
+                                                <input
+                                                    type="datetime-local"
+                                                    id="start"
+                                                    name="start"
+                                                    value={formData.start}
+                                                    onChange={handleChange}
+                                                    min={currentDateTime}
+                                                    className={`block w-full px-4 py-3 rounded-md border ${errors.start ? 'border-red-300' : 'border-gray-300'} shadow-sm focus:ring-blue-500 focus:border-blue-500`}
+                                                    required
+                                                />
+                                                {errors.start && <p className="mt-1 text-sm text-red-600">{errors.start}</p>}
+                                            </div>
+                                        </div>
+
+                                        <div>
+                                            <label htmlFor="end" className="block text-sm font-medium text-gray-700">
+                                                End Date & Time *
+                                            </label>
+                                            <div className="mt-1">
+                                                <input
+                                                    type="datetime-local"
+                                                    id="end"
+                                                    name="end"
+                                                    value={formData.end}
+                                                    onChange={handleChange}
+                                                    min={formData.start || currentDateTime}
+                                                    className={`block w-full px-4 py-3 rounded-md border ${errors.end ? 'border-red-300' : 'border-gray-300'} shadow-sm focus:ring-blue-500 focus:border-blue-500`}
+                                                    required
+                                                />
+                                                {errors.end && <p className="mt-1 text-sm text-red-600">{errors.end}</p>}
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div>
+                                        <label htmlFor="location" className="block text-sm font-medium text-gray-700">
+                                            Location
+                                        </label>
+                                        <div className="mt-1">
+                                            <input
+                                                type="text"
+                                                id="location"
+                                                name="location"
+                                                value={formData.location}
+                                                onChange={handleChange}
+                                                className="block w-full px-4 py-3 rounded-md border border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500"
+                                                placeholder="Online, Office, Conference Room A, etc."
+                                            />
+                                        </div>
+                                    </div>
+
+                                    <div>
+                                        <label htmlFor="attendees" className="block text-sm font-medium text-gray-700">
+                                            Attendees
+                                        </label>
+                                        <div className="mt-1">
+                                            <input
+                                                type="text"
+                                                id="attendees"
+                                                name="attendees"
+                                                value={formData.attendees}
+                                                onChange={handleChange}
+                                                className="block w-full px-4 py-3 rounded-md border border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500"
+                                                placeholder="email1@example.com, email2@example.com"
+                                            />
+                                            <p className="mt-2 text-sm text-gray-500">Separate multiple emails with commas</p>
+                                        </div>
+                                    </div>
+
+                                    <div className="flex justify-end space-x-4 pt-4">
+                                        <button
+                                            type="button"
+                                            onClick={() => setIsSubmitting(false)}
+                                            className="px-6 py-2.5 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+                                        >
+                                            Cancel
+                                        </button>
+                                        <button
+                                            type="submit"
+                                            disabled={isSubmitting}
+                                            className="px-6 py-2.5 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-70 disabled:cursor-not-allowed"
+                                        >
+                                            {isSubmitting ? (
+                                                <span className="flex items-center">
+                                                    <svg className="animate-spin -ml-1 mr-2 h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                                                        <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                                                        <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                                                    </svg>
+                                                    Updating...
+                                                </span>
+                                            ) : 'Update Event'}
+                                        </button>
+                                    </div>
+                                </form>
                             </div>
                         </div>
+                    </div>
+            }
 
-                        <div>
-                            <label htmlFor="location" className="block text-sm font-medium text-gray-700">
-                                Location
-                            </label>
-                            <div className="mt-1">
-                                <input
-                                    type="text"
-                                    id="location"
-                                    name="location"
-                                    value={formData.location}
-                                    onChange={handleChange}
-                                    className="block w-full px-4 py-3 rounded-md border border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500"
-                                    placeholder="Online, Office, Conference Room A, etc."
-                                />
-                            </div>
-                        </div>
-
-                        <div>
-                            <label htmlFor="attendees" className="block text-sm font-medium text-gray-700">
-                                Attendees
-                            </label>
-                            <div className="mt-1">
-                                <input
-                                    type="text"
-                                    id="attendees"
-                                    name="attendees"
-                                    value={formData.attendees}
-                                    onChange={handleChange}
-                                    className="block w-full px-4 py-3 rounded-md border border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500"
-                                    placeholder="email1@example.com, email2@example.com"
-                                />
-                                <p className="mt-2 text-sm text-gray-500">Separate multiple emails with commas</p>
-                            </div>
-                        </div>
-
-                        <div className="flex justify-end space-x-4 pt-4">
-                            <button
-                                type="button"
-                                onClick={() => setIsSubmitting(false)}
-                                className="px-6 py-2.5 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
-                            >
-                                Cancel
-                            </button>
-                            <button
-                                type="submit"
-                                disabled={isSubmitting}
-                                className="px-6 py-2.5 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-70 disabled:cursor-not-allowed"
-                            >
-                                {isSubmitting ? (
-                                    <span className="flex items-center">
-                                        <svg className="animate-spin -ml-1 mr-2 h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                                            <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                                            <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                                        </svg>
-                                        Updating...
-                                    </span>
-                                ) : 'Update Event'}
-                            </button>
-                        </div>
-                    </form>
-                </div>
-            </div>
-        </div>
+        </>
     )
 }
 
 export default EditEvent
+

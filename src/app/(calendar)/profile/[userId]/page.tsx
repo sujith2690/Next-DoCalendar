@@ -30,5 +30,5 @@ export default async function UserProfile({ params, }: { params: Promise<{ userI
                 <CallButton />
             </div>
         </div>
-    )
+    )   
 }

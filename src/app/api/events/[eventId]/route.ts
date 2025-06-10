@@ -10,12 +10,16 @@ interface Params {
     };
 }
 
-export async function GET(req: NextRequest, { params }: Params) {
+
+export async function GET(_request: Request, { params }: { params: Promise<{ eventId: string }> }) {
+    const { eventId } = await params;
+    console.log(eventId, '-----------------eventId')
     const session = await auth();
     if (!session || !session.user || !session.user._id) {
         return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
-    const googleEventId = params.eventId
+    const googleEventId = eventId
+    console.log(googleEventId, '------------googleEventId')
     await connectDB();
 
     try {
