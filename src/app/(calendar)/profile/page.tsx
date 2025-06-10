@@ -7,12 +7,8 @@ import { profileSchema } from '@/validation/profile';
 import { toast } from 'react-toastify';
 import Loading from '@/app/(ui)/components/Loading';
 
-interface UserProfileProps {
-    params: { userId: string };
-}
 
-export default function UserProfile({ params }: UserProfileProps) {
-    const userId = params.userId;
+export default function UserProfile() {
 
     const [isEditing, setIsEditing] = useState(false);
     const [view, setView] = useState(false)
@@ -44,7 +40,7 @@ export default function UserProfile({ params }: UserProfileProps) {
         };
 
         fetchUserProfile();
-    }, [userId]);
+    }, []);
 
     const formik = useFormik({
         initialValues: formData,
