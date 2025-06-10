@@ -166,8 +166,8 @@ const EditEvent = ({ eventId }: { eventId: string }) => {
         <div className="min-h-screen bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
             <div className="max-w-3xl mx-auto">
                 <div className="text-center mb-8">
-                    <h1 className="text-3xl font-extrabold text-gray-900">Create New Event</h1>
-                    <p className="mt-2 text-sm text-gray-600">Fill out the form below to schedule your event</p>
+                    <h1 className="text-3xl font-extrabold text-gray-900">Update Event</h1>
+                    <p className="mt-2 text-sm text-gray-600">Change form below to schedule your event</p>
                 </div>
 
                 <div className="bg-white shadow rounded-lg p-6 sm:p-8">

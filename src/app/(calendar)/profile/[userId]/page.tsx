@@ -1,9 +1,7 @@
-// export const metadata = {
-//     // title: "Profile DcCalendar",
-// };
-
 import CallButton from "@/app/(ui)/components/CallButton";
 import { notFound } from "next/navigation";
+
+
 const UserProfile = async ({ params }: { params: { userId: string } }) => {
     const { userId } = params;
     if (parseInt(userId) > 10) {

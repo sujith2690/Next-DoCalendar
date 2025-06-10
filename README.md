@@ -1,36 +1,58 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# DoCalendar 📅
+
+DoCalendar is a powerful Google Calendar scheduling and reminder application built with [Next.js](https://nextjs.org). It allows users to authenticate via Google, manage calendar events (Create, Read, Update, Delete), and get phone call reminders before upcoming events. This application also includes OTP verification using Twilio and stores data securely in MongoDB.
+
+---
+
+## Features
+
+- 🔐 Google Authentication with NextAuth.js
+- 📆 Full Google Calendar CRUD integration
+- 📤 Twilio OTP phone number verification
+- 📞 Voice call reminders before calendar events
+- 💾 MongoDB for data persistence (users & events)
+- ⚙️ Cron job automation for event-based reminders
+
+---
 
 ## Getting Started
 
-First, run the development server:
+First, install the dependencies:
 
 ```bash
+npm install
+# or
+yarn install
+
+Then, run the development server:
 npm run dev
 # or
 yarn dev
-# or
-pnpm dev
-# or
-bun dev
+Open http://localhost:3000 with your browser to see the result.
 ```
+Environment Variables
+Create a .env.local file and add the following:
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+GOOGLE_CLIENT_ID=your_google_client_id
+GOOGLE_CLIENT_SECRET=your_google_client_secret
+MONGODB_URI=your_mongodb_connection_string
+NEXTAUTH_SECRET=your_nextauth_secret
+NEXTAUTH_URL=http://localhost:3000
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+TWILIO_ACCOUNT_SID=your_twilio_account_sid
+TWILIO_AUTH_TOKEN=your_twilio_auth_token
+TWILIO_PHONE_NUMBER=your_twilio_phone_number
 
-## Learn More
+File Structure
+app/: Contains your Next.js routes and pages
 
-To learn more about Next.js, take a look at the following resources:
+models/: MongoDB models for user and events
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+utils/: Utility functions including Twilio & Google API handlers
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+cron/: Scheduled job logic for sending reminders
 
-## Deploy on Vercel
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+Hosting
+You can deploy the app using Vercel, which offers seamless integration with Next.js. Note that the cron job automation may require a custom server or external services like cron-job.org.

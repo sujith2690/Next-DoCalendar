@@ -9,7 +9,7 @@ export function middleware(request: NextRequest) {
     // console.log(token, '------ token in middleware');
 
     if (publicPath && token) {
-        return NextResponse.redirect(new URL('/myEvents', request.url))
+        return NextResponse.redirect(new URL('/', request.url))
     }
     if (!publicPath && token) {
         return NextResponse.rewrite(request.nextUrl)
