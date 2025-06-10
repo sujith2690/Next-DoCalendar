@@ -36,7 +36,7 @@ function getCurrentDateTimeString(): string {
     return `${year}-${month}-${day}T${hours}:${minutes}`;
 }
 
-const EditEvent = ({ eventId }: { eventId: string }) => {
+const EditEvent = ({ eventId }: { eventId: string }) => {   
     const { data: session } = useSession();
     if (!session) { redirect('/login'); }
 
