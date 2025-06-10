@@ -23,7 +23,6 @@ export async function GET(req: NextRequest) {
         return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    await connectDB();
     try {
         const userEvents = await eventModel.findOne({ userId: session.user._id })
         console.log(userEvents.events, '-----------------all  event route db');

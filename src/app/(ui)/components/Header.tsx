@@ -24,7 +24,7 @@ export default async function Header() {
                     <Link href="/addEvent" className="text-gray-700 hover:text-blue-600 font-medium">
                         Add Event
                     </Link>
-                    <Link href="/profile/1" className="text-gray-700 hover:text-blue-600 font-medium">
+                    <Link href="/profile" className="text-gray-700 hover:text-blue-600 font-medium">
                         Profile
                     </Link>
                 </nav>
@@ -33,7 +33,7 @@ export default async function Header() {
                 {user ? (
                     <form action={async () => {
                         "use server";
-                        await signOut({ redirectTo: '/login'});
+                        await signOut({ redirectTo: '/login' });
                     }}>
                         <button
                             type="submit"

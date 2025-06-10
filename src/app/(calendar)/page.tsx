@@ -5,8 +5,9 @@ import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import ProjectDescription from "../(ui)/components/ProjectDescription";
 import Loading from "../(ui)/components/Loading";
+import { userPhone } from "../axiosPath/user";
 
-export default function UserProfile() {
+export default function HomePage() {
   const router = useRouter();
   const [loading, setLoading] = useState(false);
   const [numberExists, setNumberExists] = useState(true); // assume phone exists initially
@@ -15,7 +16,7 @@ export default function UserProfile() {
     const fetchUserPhone = async () => {
       setLoading(true);
       try {
-        const { data } = await axios.get("/api/user/phone");
+        const { data } = await userPhone()
         console.log(data, '----------------- data in phone route GET method');
         if (!data.phoneNumberExists) {
           // Client-side navigation to /phone
