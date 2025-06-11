@@ -66,7 +66,6 @@ export default function MyCalender() {
 
     const handleDeleteEvent = async () => {
         if (!eventToDelete) return;
-        toast.success("Event Deleted");
         closeConfirmModal();
         try {
             await deleteEvent(eventToDelete);

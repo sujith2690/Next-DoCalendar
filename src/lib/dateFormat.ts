@@ -36,3 +36,32 @@ export const localDateTime = (input: string): string => {
 
     return `${day}-${month}-${year} Time ${formattedHours}:${minutes} ${amOrPm}`;
 };
+
+
+// export function addISTOffset(dateTimeString: string): string {
+//     const date = new Date(dateTimeString);
+//     // Add 5 hours 30 minutes in milliseconds
+//     const istOffsetMs = (5 * 60 + 30) * 60 * 1000;
+//     const istDate = new Date(date.getTime() + istOffsetMs);
+//     // Format it back as ISO string with +05:30
+//     const [datePart, timePart] = istDate.toISOString().split('T');
+//     const timeWithoutZ = timePart.replace('Z', '');
+//     return `${datePart}T${timeWithoutZ}+05:30`;
+// }
+
+export function addISTOffset(dateTimeString: string): string {
+    const date = new Date(dateTimeString);
+    // Add 5 hours and 30 minutes in milliseconds
+    const istOffsetMs = (5 * 60 + 30) * 60 * 1000;
+    const shiftedDate = new Date(date.getTime() + istOffsetMs);
+
+    // Convert back to ISO string with custom +05:30 offset
+    const yyyy = shiftedDate.getFullYear();
+    const mm = String(shiftedDate.getMonth() + 1).padStart(2, '0');
+    const dd = String(shiftedDate.getDate()).padStart(2, '0');
+    const hh = String(shiftedDate.getHours()).padStart(2, '0');
+    const min = String(shiftedDate.getMinutes()).padStart(2, '0');
+    const ss = String(shiftedDate.getSeconds()).padStart(2, '0');
+
+    return `${yyyy}-${mm}-${dd}T${hh}:${min}:${ss}+05:30`;
+}

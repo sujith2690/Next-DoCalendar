@@ -7,6 +7,7 @@ import userModel from "@/models/userModel";
 import eventModel from "@/models/eventModel";
 import { time } from "console";
 import { getSession } from "@/utils/session";
+import { addISTOffset } from "@/lib/dateFormat";
 
 export async function GET(req: NextRequest) {
     const session = await auth();
@@ -45,17 +46,15 @@ export async function POST(req: NextRequest) {
     const body = await req.json();
 
     try {
-        console.log(body, '-------------body')
+
+        const result = addISTOffset(body.start.dateTime)
+        body.start.dateTime = result
+        const result2 = addISTOffset(body.end.dateTime)
+        body.end.dateTime = result2
+
+
         const userId = session.user._id;
         const userEmail = session.user.email;
-        // const data = {
-        //     summary: 'Eiusmod facilis haru',
-        //     description: 'Nesciunt qui provid',
-        //     start: { dateTime: '2025-06-08T19:45:00+05:30', timeZone: 'Asia/Kolkata' },
-        //     end: { dateTime: '2025-06-09T02:55:00+05:30', timeZone: 'Asia/Kolkata' },
-        //     location: 'Lorem est excepturi',
-        //     attendees: [{ email: 'asd@gmail.com' }, { email: 'qwe@gmail.com' }]
-        // }
 
         // Step 1: Create event in Google Calendar
         const googleEvent = await createEvent(session.googleAccessToken, body);
@@ -162,6 +161,10 @@ export async function PUT(req: NextRequest) {
     await connectDB();
 
     try {
+        const result = addISTOffset(updatedData.start.dateTime)
+        updatedData.start.dateTime = result
+        const result2 = addISTOffset(updatedData.end.dateTime)
+        updatedData.end.dateTime = result2
         const updatedGoogleEvent = await updateEvent(session.googleAccessToken, eventId, updatedData);
         console.log(updatedGoogleEvent, '--------------updatedGoogleEvent')
         const newEvent = {
