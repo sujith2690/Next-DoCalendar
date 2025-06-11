@@ -149,12 +149,21 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
             await connectDB();
             console.log(account?.access_token, '--------A--------- account access token in signIn callback');
             console.log(account?.refresh_token, '--------R---f------ account refresh token in signIn callback');
-            
+
             try {
                 let dbUser = await userModel.findOne({ email: user.email });
+
                 if (!dbUser) {
+                    // Ensure the username you're about to assign is not already taken
+                    let safeUserName = user.name;
+                    let count = 1;
+
+                    while (await userModel.findOne({ userName: safeUserName })) {
+                        safeUserName = `${user.name} (${count++})`;
+                    }
+
                     dbUser = await userModel.create({
-                        userName: user.name,
+                        userName: safeUserName,
                         email: user.email,
                         image: user.image,
                         password: "google-auth",
@@ -171,7 +180,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
                     await dbUser.save();
                 }
             } catch (error: any) {
-                console.log('Error in sign in path google-------err------------- ', error.message)
+                console.log('❌ Error in signin in path google-------err------------- ', error.message)
             }
             return true;
 
