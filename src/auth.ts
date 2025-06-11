@@ -146,11 +146,11 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
     callbacks: {
         // 1. Store user in DB and save Google tokens
         async signIn({ user, account }) {
+            await connectDB();
+            console.log(account?.access_token, '--------A--------- account access token in signIn callback');
+            console.log(account?.refresh_token, '--------R---f------ account refresh token in signIn callback');
+            
             try {
-                await connectDB();
-                console.log(account?.access_token, '--------A--------- account access token in signIn callback');
-                console.log(account?.refresh_token, '--------R---f------ account refresh token in signIn callback');
-
                 let dbUser = await userModel.findOne({ email: user.email });
                 if (!dbUser) {
                     dbUser = await userModel.create({
