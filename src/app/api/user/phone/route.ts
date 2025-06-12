@@ -8,6 +8,7 @@ import userModel from "@/models/userModel";
 export async function GET(req: NextRequest) {
     try {
         const session = await auth();
+        console.log(session,'--------------session home page session checking')
 
         if (!session || !session.user || !session.user._id) {
             return NextResponse.json({ error: "Unauthorized" }, { status: 401 });

@@ -119,13 +119,13 @@ export async function GET(req: NextRequest) {
 
         for (const eventDoc of allEventDocs) {
             const { userId, events } = eventDoc;
+            console.log(events, '---------------events')
 
             for (const event of events) {
                 const startTime = new Date(event.start.dateTime);
 
-                // Compare event start time with now + 5 min (within 1 min threshold for safe match)
-                const timeDiff = Math.abs(startTime.getTime() - inFiveMinutes.getTime());
-                if (timeDiff < 60 * 1000) {
+                // Event is starting within the next 5 minutes
+                if (startTime >= now && startTime <= inFiveMinutes) {
                     // Fetch user phone
                     const user = await userModel.findById(userId);
                     console.log(user, '-found user***********')

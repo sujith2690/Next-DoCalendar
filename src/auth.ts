@@ -150,45 +150,31 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
             console.log(account?.access_token, '--------A--------- account access token in signIn callback');
             console.log(account?.refresh_token, '--------R---f------ account refresh token in signIn callback');
 
-            try {
-                let dbUser = await userModel.findOne({ email: user.email });
-
-                if (!dbUser) {
-                    // Ensure the username you're about to assign is not already taken
-                    let safeUserName = user.name;
-                    let count = 1;
-
-                    while (await userModel.findOne({ userName: safeUserName })) {
-                        safeUserName = `${user.name} (${count++})`;
-                    }
-
-                    dbUser = await userModel.create({
-                        userName: safeUserName,
-                        email: user.email,
-                        image: user.image,
-                        password: "google-auth",
-                        googleAccessToken: account?.access_token,
-                        googleRefreshToken: account?.refresh_token,
-                        googleTokenExpiry: account?.expires_at,
-                    });
-                } else {
-                    dbUser.googleAccessToken = account?.access_token;
-                    dbUser.googleTokenExpiry = account?.expires_at;
-                    if (account?.refresh_token) {
-                        dbUser.googleRefreshToken = account.refresh_token;
-                    }
-                    await dbUser.save();
+            let dbUser = await userModel.findOne({ email: user.email });
+            if (!dbUser) {
+                dbUser = await userModel.create({
+                    userName: user.name,
+                    email: user.email,
+                    image: user.image,
+                    password: "google-auth",
+                    googleAccessToken: account?.access_token,
+                    googleRefreshToken: account?.refresh_token,
+                    googleTokenExpiry: account?.expires_at,
+                });
+            } else {
+                dbUser.googleAccessToken = account?.access_token;
+                dbUser.googleTokenExpiry = account?.expires_at;
+                if (account?.refresh_token) {
+                    dbUser.googleRefreshToken = account.refresh_token;
                 }
-            } catch (error: any) {
-                console.log('❌ Error in signin in path google-------err------------- ', error.message)
+                await dbUser.save();
             }
-            return true;
 
+            return true;
         },
         // 2. Add user ID and Google tokens to JWT
         async jwt({ token, user, account }) {
             if (user) {
-
                 await connectDB();
                 const dbUser = await userModel.findOne({ email: user.email });
                 if (dbUser) {

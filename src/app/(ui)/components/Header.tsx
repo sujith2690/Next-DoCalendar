@@ -1,10 +1,13 @@
 
 import Link from 'next/link';
 import { auth, signIn, signOut } from "@/auth";
+import { redirect } from 'next/navigation';
 
 export default async function Header() {
     const session = await auth();
     const user = session?.user;
+    // if(!user) redirect('/login')
+    console.log(user, '-------------------user')
 
     return (
         <header className="bg-white shadow-md sticky top-0 z-50">
@@ -50,6 +53,17 @@ export default async function Header() {
                         Login
                     </Link>
                 )}
+                {/* <form action={async () => {
+                    "use server";
+                    await signOut({ redirectTo: '/login' });
+                }}>
+                    <button
+                        type="submit"
+                        className="bg-red-600 text-white px-4 py-2 rounded hover:bg-red-700 text-sm"
+                    >
+                        Logout
+                    </button>
+                </form> */}
             </div>
         </header>
     );
